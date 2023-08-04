@@ -1,0 +1,96 @@
+#include <Servo.h>
+
+
+Servo myservo;
+
+#define ir_enter 2
+#define ir_back  4
+
+#define ir_car1 5
+#define ir_car2 6
+#define ir_car3 7
+#define ir_car4 8
+#define ir_car5 9
+#define ir_car6 10
+
+int S1=0, S2=0, S3=0, S4=0, S5=0, S6=0;
+int flag1=0, flag2=0; 
+int slot = 6;  
+
+void setup(){
+  Serial.begin(9600);
+
+  pinMode(ir_car1, INPUT);
+  pinMode(ir_car2, INPUT);
+  pinMode(ir_car3, INPUT);
+  pinMode(ir_car4, INPUT);
+  pinMode(ir_car5, INPUT);
+  pinMode(ir_car6, INPUT);
+
+  pinMode(ir_enter, INPUT);
+  pinMode(ir_back, INPUT);
+  
+  myservo.attach(3);
+  myservo.write(90);
+}
+
+void loop(){
+  Read_Sensor();
+
+  if(S1==1){Serial.println("Slot 1 is occupied");}
+  else{Serial.println("Slot 1 is empty");}
+  
+  if(S2==1){Serial.println("Slot 2 is occupied");}
+  else{Serial.println("Slot 2 is empty");}
+  
+  if(S3==1){Serial.println("Slot 3 is occupied");}
+  else{Serial.println("Slot 3 is empty");}
+  
+  if(S4==1){Serial.println("Slot 4 is occupied");}
+  else{Serial.println("Slot 4 is empty");}
+  
+  if(S5==1){Serial.println("Slot 5 is occupied");}
+  else{Serial.println("Slot 5 is empty");}
+  
+  if(S6==1){Serial.println("Slot 6 is occupied");}
+  else{Serial.println("Slot 6 is empty");}
+  
+  if(digitalRead(ir_enter) == 0 && flag1==0){
+    if(slot>0){
+      flag1=1;
+      if(flag2==0){
+        myservo.write(180);
+        slot = slot-1;
+      }
+    }else{
+      Serial.println("Parking is full!");
+    }   
+  }
+
+  if(digitalRead(ir_back) == 0 && flag2==0){
+    flag2=1;
+    if(flag1==0){
+      myservo.write(180);
+      slot = slot+1;
+    }
+  }
+
+  if(flag1==1 && flag2==1){
+    delay (1000);
+    myservo.write(90);
+    flag1=0, flag2=0;
+  }
+
+  delay(100);
+}
+
+void Read_Sensor(){
+  S1=0, S2=0, S3=0, S4=0, S5=0, S6=0;
+
+  if(digitalRead(ir_car1) == 0){S1=1;}
+  if(digitalRead(ir_car2) == 0){S2=1;}
+  if(digitalRead(ir_car3) == 0){S3=1;}
+  if(digitalRead(ir_car4) == 0){S4=1;}
+  if(digitalRead(ir_car5) == 0){S5=1;}
+  if(digitalRead(ir_car6) == 0){S6=1;}  
+}
